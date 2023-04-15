@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://d25qk5xa88whq"]
+
+[ext_resource type="PackedScene" uid="uid://dm3hpxxovxc0d" path="res://Scenes/Player/player.tscn" id="1_7yr48"]
+[ext_resource type="PackedScene" uid="uid://sjisuvkoqw8i" path="res://Scenes/Enemy/Dasher/dasher.tscn" id="2_i1lwa"]
+[ext_resource type="PackedScene" uid="uid://bj5hh7edhrugc" path="res://Scenes/Enemy/Archer/archer.tscn" id="3_ky8to"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wt6kw"]
+size = Vector2(625, 20)
+
+[node name="Test" type="Node2D"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(342.5, 291)
+shape = SubResource("RectangleShape2D_wt6kw")
+
+[node name="Player" parent="." instance=ExtResource("1_7yr48")]
+position = Vector2(311, 266)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(1, 1)
+zoom = Vector2(5, 5)
+position_smoothing_enabled = true
+drag_left_margin = 0.4
+drag_top_margin = 0.4
+drag_right_margin = 0.4
+drag_bottom_margin = 0.4
+editor_draw_limits = true
+editor_draw_drag_margin = true
+
+[node name="Dasher" parent="." instance=ExtResource("2_i1lwa")]
+position = Vector2(230, 264)
+
+[node name="Archer" parent="." instance=ExtResource("3_ky8to")]
+position = Vector2(421, 267)

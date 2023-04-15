@@ -1,0 +1,70 @@
+[gd_scene load_steps=9 format=3 uid="uid://bj5hh7edhrugc"]
+
+[ext_resource type="Script" path="res://addons/state_machine/StateMachine.gd" id="1_dlic1"]
+[ext_resource type="Script" path="res://Scenes/Enemy/Archer/Walk.gd" id="2_t1pwk"]
+[ext_resource type="Script" path="res://Scripts/HurtBox/HurtBox.gd" id="3_fo6e1"]
+[ext_resource type="Script" path="res://Scenes/Enemy/Archer/Attack.gd" id="3_s4hb7"]
+[ext_resource type="Script" path="res://Scenes/Enemy/Archer/Dead.gd" id="4_2dc0g"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lc88v"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_votdr"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_j8voc"]
+radius = 72.111
+
+[node name="Archer" type="CharacterBody2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_lc88v")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("1_dlic1")
+inition_state = NodePath("Walk")
+
+[node name="Walk" type="Node" parent="StateMachine"]
+script = ExtResource("2_t1pwk")
+anim_sprite = NodePath("../../AnimatedSprite2D")
+hurtbox = NodePath("../../HurtBox2D")
+detect_area = NodePath("../../DetectArea")
+pivot = NodePath("../../Pivot")
+
+[node name="Attack" type="Node" parent="StateMachine"]
+script = ExtResource("3_s4hb7")
+bullet = "res://Scenes/Enemy/Archer/Bullet.tscn"
+hurtbox = NodePath("../../HurtBox2D")
+detect_area = NodePath("../../DetectArea")
+pivot = NodePath("../../Pivot")
+
+[node name="Timer" type="Timer" parent="StateMachine/Attack"]
+wait_time = 0.7
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("4_2dc0g")
+
+[node name="HurtBox2D" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 4
+script = ExtResource("3_fo6e1")
+max_health = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox2D"]
+shape = SubResource("CircleShape2D_votdr")
+debug_color = Color(0.184314, 0.65098, 0, 0.792157)
+
+[node name="DetectArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectArea"]
+shape = SubResource("CircleShape2D_j8voc")
+
+[node name="Pivot" type="Marker2D" parent="."]
+rotation = 3.14159
+
+[node name="ShootPos" type="Marker2D" parent="Pivot"]
+position = Vector2(12, 0)

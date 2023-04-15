@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=3 uid="uid://ch241ta2oalsa"]
+
+[ext_resource type="Script" path="res://Scenes/Enemy/Archer/Bullet.gd" id="1_umlpr"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_b4mxa"]
+radius = 2.0
+height = 10.0
+
+[sub_resource type="Curve" id="Curve_a4yug"]
+max_value = 3.0
+_data = [Vector2(0, 2.64545), 0.0, 0.0, 0, 0, Vector2(0.516484, 0.981818), 0.0, 0.0, 0, 0, Vector2(0.989011, 2.01818), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_x10r7"]
+
+[node name="HitBox2D" type="Area2D"]
+collision_layer = 2
+collision_mask = 16
+script = ExtResource("1_umlpr")
+damage = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.57079
+shape = SubResource("CapsuleShape2D_b4mxa")
+debug_color = Color(0.956863, 0, 0.262745, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="GPUParticles2D" type="CPUParticles2D" parent="."]
+position = Vector2(-5, 0)
+amount = 20
+emission_shape = 1
+emission_sphere_radius = 1.0
+particle_flag_align_y = true
+direction = Vector2(-1, 0)
+spread = 15.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 20.0
+initial_velocity_max = 50.0
+scale_amount_curve = SubResource("Curve_a4yug")
+color_ramp = SubResource("Gradient_x10r7")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 4.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -1,0 +1,104 @@
+[gd_scene load_steps=14 format=3 uid="uid://sjisuvkoqw8i"]
+
+[ext_resource type="Script" path="res://addons/state_machine/StateMachine.gd" id="1_a7eul"]
+[ext_resource type="Script" path="res://Scenes/Enemy/Dasher/Patrul.gd" id="2_gipq2"]
+[ext_resource type="Script" path="res://Scenes/Enemy/Dasher/Dash.gd" id="3_hs75a"]
+[ext_resource type="Script" path="res://Scenes/Enemy/Dasher/Dead.gd" id="4_hsp2t"]
+[ext_resource type="Script" path="res://Scripts/HurtBox/HurtBox.gd" id="4_k30h0"]
+[ext_resource type="Script" path="res://Scripts/HurtBox/HitBox.gd" id="5_bnu48"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_geq6v"]
+radius = 5.09902
+
+[sub_resource type="Animation" id="Animation_lj6yw"]
+resource_name = "Dash"
+
+[sub_resource type="Animation" id="Animation_silgt"]
+resource_name = "Dead"
+
+[sub_resource type="Animation" id="Animation_n347j"]
+resource_name = "Walk"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qaxxu"]
+_data = {
+"Dash": SubResource("Animation_lj6yw"),
+"Dead": SubResource("Animation_silgt"),
+"Walk": SubResource("Animation_n347j")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_x283g"]
+radius = 6.08276
+
+[sub_resource type="SeparationRayShape2D" id="SeparationRayShape2D_doiij"]
+length = 15.0
+
+[node name="Dasher" type="CharacterBody2D"]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_geq6v")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("1_a7eul")
+inition_state = NodePath("Patrul")
+
+[node name="Patrul" type="Node" parent="StateMachine"]
+script = ExtResource("2_gipq2")
+anim_sprite = NodePath("../../AnimatedSprite2D")
+hurtbox = NodePath("../../HurtBox2D")
+
+[node name="Rays" type="Node2D" parent="StateMachine/Patrul"]
+
+[node name="PlayerDetect" type="RayCast2D" parent="StateMachine/Patrul/Rays"]
+target_position = Vector2(50, 0)
+collision_mask = 32
+collide_with_areas = true
+
+[node name="FloorDetect" type="RayCast2D" parent="StateMachine/Patrul/Rays"]
+position = Vector2(-3, 5)
+target_position = Vector2(0, 2)
+
+[node name="FloorDetect2" type="RayCast2D" parent="StateMachine/Patrul/Rays"]
+position = Vector2(3, 5)
+target_position = Vector2(0, 2)
+
+[node name="Dash" type="Node" parent="StateMachine"]
+script = ExtResource("3_hs75a")
+hurtbox = NodePath("../../HurtBox2D")
+
+[node name="DashTimer" type="Timer" parent="StateMachine/Dash"]
+wait_time = 1.5
+one_shot = true
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("4_hsp2t")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_qaxxu")
+}
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="."]
+remote_path = NodePath("../StateMachine/Patrul/Rays")
+
+[node name="HurtBox2D" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 4
+script = ExtResource("4_k30h0")
+max_health = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox2D"]
+shape = SubResource("CircleShape2D_x283g")
+
+[node name="HitBox2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 16
+script = ExtResource("5_bnu48")
+damage = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox2D"]
+rotation = -1.5708
+shape = SubResource("SeparationRayShape2D_doiij")
+debug_color = Color(0.898039, 0, 0.231373, 0.556863)

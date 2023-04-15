@@ -1,0 +1,104 @@
+[gd_scene load_steps=16 format=3 uid="uid://dm3hpxxovxc0d"]
+
+[ext_resource type="Script" path="res://addons/state_machine/StateMachine.gd" id="1_2lk5g"]
+[ext_resource type="Texture2D" uid="uid://c32yepnrogjt2" path="res://icon.svg" id="1_wiy17"]
+[ext_resource type="Script" path="res://Scenes/Player/Walk.gd" id="2_vhd3b"]
+[ext_resource type="Script" path="res://Scenes/Player/Dash.gd" id="3_6vv0b"]
+[ext_resource type="Script" path="res://Scenes/Player/Dead.gd" id="4_87cdl"]
+[ext_resource type="Script" path="res://Scripts/HurtBox/HurtBox.gd" id="5_aqbol"]
+[ext_resource type="Script" path="res://Scripts/HurtBox/HitBox.gd" id="7_2d3w5"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_r0lj0"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8fs7q"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_wiy17")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="Animation" id="Animation_u1i44"]
+resource_name = "Dead"
+
+[sub_resource type="Animation" id="Animation_efkvn"]
+resource_name = "Idle"
+
+[sub_resource type="Animation" id="Animation_o40t8"]
+resource_name = "Jump"
+
+[sub_resource type="Animation" id="Animation_ihf5o"]
+resource_name = "Walk"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_awow6"]
+_data = {
+"Dead": SubResource("Animation_u1i44"),
+"Idle": SubResource("Animation_efkvn"),
+"Jump": SubResource("Animation_o40t8"),
+"Walk": SubResource("Animation_ihf5o")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_us3mq"]
+
+[node name="Player" type="CharacterBody2D" groups=["Player"]]
+collision_layer = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_r0lj0")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.1, 0.1)
+sprite_frames = SubResource("SpriteFrames_8fs7q")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_awow6")
+}
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("1_2lk5g")
+inition_state = NodePath("Walk")
+
+[node name="Walk" type="Node" parent="StateMachine"]
+script = ExtResource("2_vhd3b")
+anim_sprite = NodePath("../../AnimatedSprite2D")
+hurtbox = NodePath("../../HurtBox2D")
+
+[node name="Dash" type="Node" parent="StateMachine"]
+script = ExtResource("3_6vv0b")
+hitbox = NodePath("../../HitBox2D")
+hurtbox = NodePath("../../HurtBox2D")
+
+[node name="DashTimer" type="Timer" parent="StateMachine/Dash"]
+wait_time = 0.7
+one_shot = true
+
+[node name="GhostTimer" type="Timer" parent="StateMachine/Dash"]
+wait_time = 0.05
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("4_87cdl")
+
+[node name="HurtBox2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 16
+script = ExtResource("5_aqbol")
+max_health = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox2D"]
+shape = SubResource("CircleShape2D_us3mq")
+debug_color = Color(0.478431, 0.756863, 0, 0.419608)
+
+[node name="HitBox2D" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 8
+script = ExtResource("7_2d3w5")
+damage = 1.0
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="HitBox2D"]
+shape = SubResource("CircleShape2D_us3mq")
+disabled = true
+debug_color = Color(0.788235, 0.14902, 0.294118, 1)
